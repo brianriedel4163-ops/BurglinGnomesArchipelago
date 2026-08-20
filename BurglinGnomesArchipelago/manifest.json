@@ -1,6 +1,6 @@
 {
   "name": "ArchipelagoClient",
-  "version_number": "0.1.1",
+  "version_number": "0.1.2",
   "website_url": "https://github.com/brianriedel4163-ops/BurglinGnomesArchipelago",
   "description": "Multiworld randomizer for Burglin' Gnomes. Complete High-Gnome tasks to send checks. Receive items from other games. F6 overlay lets you connect and claim rewards without losing inventory items.",
   "dependencies": [
