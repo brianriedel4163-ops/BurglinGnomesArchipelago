@@ -1,8 +1,8 @@
 {
   "name": "ArchipelagoClient",
   "version_number": "0.1.1",
-  "website_url": "https://github.com/coollb1/BurglinGnomesArchipelago",
-  "description": "Connects Burglin' Gnomes to an Archipelago multiworld randomizer server. Complete High-Gnome tasks to send location checks. Receive items into the F6 overlay's Pending Rewards panel and claim them when ready.",
+  "website_url": "https://github.com/brianriedel4163-ops/BurglinGnomesArchipelago",
+  "description": "Multiworld randomizer for Burglin' Gnomes. Complete High-Gnome tasks to send checks. Receive items from other games. F6 overlay lets you connect and claim rewards without losing inventory items.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ]
