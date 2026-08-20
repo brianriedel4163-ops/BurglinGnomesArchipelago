@@ -1,0 +1,97 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>BurglinGnomesArchipelago</AssemblyName>
+    <RootNamespace>BurglinGnomesArchipelago</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!--
+    Two separate paths, because Thunderstore Mod Manager keeps BepInEx in an
+    isolated profile folder instead of inside the Steam install:
+
+      GamePath:           the actual Steam install (Browse local files).
+                           Only used for Gnomium_Data\Managed\*.dll (the
+                           game's own compiled assemblies).
+      BepInExProfilePath: the mod manager's profile folder (Settings, then
+                           Browse profile folder). Contains BepInEx\core\
+                           and BepInEx\plugins\, which is where BepInEx.dll
+                           and 0Harmony.dll live, and where the built mod
+                           gets copied to.
+
+    Override either from the command line instead of editing this file:
+      dotnet build -p:GamePath="..." -p:BepInExProfilePath="..."
+  -->
+  <PropertyGroup>
+    <GamePath Condition="'$(GamePath)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Burglin' Gnomes</GamePath>
+    <BepInExProfilePath Condition="'$(BepInExProfilePath)' == ''">C:\Users\18015\AppData\Roaming\Thunderstore Mod Manager\DataFolder\BurglinGnomes\profiles\archipelago</BepInExProfilePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Archipelago.MultiClient.Net" Version="6.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- BepInEx 5.x core references: from the mod manager's profile, not the Steam folder -->
+    <Reference Include="BepInEx">
+      <HintPath>$(BepInExProfilePath)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(BepInExProfilePath)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+
+    <!-- Unity modules and game assemblies: from the actual Steam install -->
+    <Reference Include="UnityEngine">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Unity.Netcode.Runtime">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="NodeCanvas">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\NodeCanvas.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="ParadoxNotion">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\ParadoxNotion.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GamePath)\Gnomium_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy the built DLL AND its NuGet dependencies (Archipelago.MultiClient.Net
+       and whatever it depends on) into the mod manager's plugins folder.
+       ReferenceCopyLocalPaths is MSBuild's own resolved list of "copy local"
+       dependencies. Since all our BepInEx/Unity/game references are marked
+       Private=false above, this only picks up the actual NuGet package
+       closure, not anything already present in the game itself. -->
+  <Target Name="CopyToPlugins" AfterTargets="Build" Condition="Exists('$(BepInExProfilePath)\BepInEx\plugins')">
+    <ItemGroup>
+      <FilesToCopy Include="$(TargetPath)" />
+      <FilesToCopy Include="@(ReferenceCopyLocalPaths)" Condition="'%(Extension)' == '.dll'" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(BepInExProfilePath)\BepInEx\plugins\BurglinGnomesArchipelago\" />
+  </Target>
+
+</Project>

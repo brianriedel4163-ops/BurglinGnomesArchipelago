@@ -1,0 +1,9 @@
+{
+  "name": "ArchipelagoClient",
+  "version_number": "0.1.1",
+  "website_url": "https://github.com/coollb1/BurglinGnomesArchipelago",
+  "description": "Connects Burglin' Gnomes to an Archipelago multiworld randomizer server. Complete High-Gnome tasks to send location checks. Receive items into the F6 overlay's Pending Rewards panel and claim them when ready.",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ]
+}

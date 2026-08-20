@@ -1,0 +1,24 @@
+# .NET build output
+BurglinGnomesArchipelago/bin/
+BurglinGnomesArchipelago/obj/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+
+# Archipelago generator output
+AP_*.zip
+AP_*.archipelago
+AP_*_Spoiler.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / local config
+*.user
+*.suo
+.vs/

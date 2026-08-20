@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.x'
+
+      - name: Restore & Build mod
+        working-directory: BurglinGnomesArchipelago
+        run: |
+          dotnet restore
+          dotnet build --configuration Release -p:GamePath="${{ secrets.GAME_PATH }}" -p:BepInExProfilePath="${{ secrets.BEPINEX_PROFILE_PATH }}"
+
+      - name: Build apworld zip
+        shell: pwsh
+        run: |
+          Compress-Archive -Path burglin_gnomes -DestinationPath burglin_gnomes.apworld -Force
+
+      - name: Build Thunderstore package
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          $pkgDir = "thunderstore_pkg"
+          New-Item -ItemType Directory -Force -Path "$pkgDir/BepInEx/plugins/coollb1-ArchipelagoClient"
+          Copy-Item icon.png         $pkgDir/
+          Copy-Item README.md        $pkgDir/
+          Copy-Item CHANGELOG.md     $pkgDir/
+          Copy-Item BurglinGnomesArchipelago/manifest.json $pkgDir/
+          Copy-Item BurglinGnomesArchipelago/bin/Release/net472/*.dll "$pkgDir/BepInEx/plugins/coollb1-ArchipelagoClient/"
+          Compress-Archive -Path "$pkgDir/*" -DestinationPath "coollb1-ArchipelagoClient-$version.zip" -Force
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            burglin_gnomes.apworld
+            coollb1-ArchipelagoClient-*.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
